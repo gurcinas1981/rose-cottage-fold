@@ -51,7 +51,7 @@ enquiryForm.addEventListener('submit',event=>{event.preventDefault();if(!enquiry
 $('#enquiry-mailto').addEventListener('click',event=>{if(!enquiryForm.reportValidity()){event.preventDefault();return}const message=enquiryMessage();event.currentTarget.href='mailto:contact@foxvisiondesign.co.uk?subject='+encodeURIComponent(message.subject)+'&body='+encodeURIComponent(message.body)});
 
 // Every architectural drawing entry point uses the same full-screen viewer.
-for(const id of ['drawing-download','plan-plot-pdf']){
+for(const id of ['drawing-download']){
  const link=document.getElementById(id);link.setAttribute('aria-haspopup','dialog');
  link.addEventListener('click',event=>{event.preventDefault();show(link.href,plots[selected].name+' · Plans and elevations')});
 }
