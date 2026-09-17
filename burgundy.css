@@ -253,3 +253,9 @@ footer .footer-top{background:linear-gradient(110deg,rgba(74,10,25,.88),rgba(35,
 
 .existing-cottage-note{margin:0;padding:14px 18px;background:#f6ecdf;border-left:4px solid var(--rose);color:var(--rose-ink);font-size:14px;line-height:1.5}
 .existing-cottage-note strong{color:var(--rose-dark)}
+
+.plan-card{align-content:start;gap:18px}
+.plan-card label{font:600 13px/1.3 Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--rose)}
+.plan-card select{width:100%;min-height:54px;padding:12px 42px 12px 14px;border:1px solid #d6bec3;background:#fffaf6;color:var(--rose-ink);font:17px/1.3 Georgia,serif}
+.plan-card .plan-open-home{width:100%;justify-content:space-between;margin:0}
+.plan-card>.note{margin:0;font-size:14px;line-height:1.55}
