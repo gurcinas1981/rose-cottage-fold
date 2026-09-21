@@ -259,3 +259,58 @@ footer .footer-top{background:linear-gradient(110deg,rgba(74,10,25,.88),rgba(35,
 .plan-card select{width:100%;min-height:54px;padding:12px 42px 12px 14px;border:1px solid #d6bec3;background:#fffaf6;color:var(--rose-ink);font:17px/1.3 Georgia,serif}
 .plan-card .plan-open-home{width:100%;justify-content:space-between;margin:0}
 .plan-card>.note{margin:0;font-size:14px;line-height:1.55}
+
+.home-dialog-heading{display:flex;align-items:center;gap:20px;min-width:0;flex:1}.home-dialog-heading strong{font-size:26px;color:#fffaf7;letter-spacing:0;white-space:nowrap}.home-dialog-heading span{font-size:14px;letter-spacing:.06em}.home-plot-nav{display:flex;gap:8px;flex-shrink:0}.home-plot-nav button{width:44px;height:44px;border-radius:50%;border:1px solid #c8a96a80;background:transparent;color:#fffaf7;font-size:16px;cursor:pointer}.home-plot-nav button[aria-pressed="true"]{background:#c8a96a;color:#310f1d;border-color:#c8a96a}.home-plot-nav button:hover{border-color:#e4ca94}.home-plot-nav button:focus-visible{outline:2px solid #fffaf7;outline-offset:3px}#home-close{flex-shrink:0}@media(max-width:850px){.home-dialog-bar{flex-wrap:wrap;gap:12px}.home-dialog-heading{flex-direction:column;align-items:flex-start;gap:4px}.home-plot-nav{order:3;flex-basis:100%;justify-content:center}.home-dialog-heading strong{font-size:22px}.home-dialog-heading span{font-size:14px;letter-spacing:0}}@media(max-width:360px){.home-plot-nav{gap:5px}.home-dialog-bar{padding-inline:10px}}
+
+.plan-tools [data-plan-mode][aria-pressed=true]{background:#e7dcc3;border-bottom:3px solid #3a121f}.plan-mode-switch{flex:0 1 auto}.plan-tools{margin-left:auto}@media(max-width:600px){.plan-toolbar{flex-wrap:wrap}.plan-mode-switch{width:auto;flex:1}.plan-tools{width:auto}.plan-tools button{white-space:nowrap}.plan-mode-switch button{flex:none}}
+
+.story-play-label{position:absolute;top:calc(100% + 22px);left:50%;transform:translateX(-50%);white-space:nowrap;font-size:clamp(16px,2vw,22px);font-weight:500;letter-spacing:.02em;color:#fffaf7;background:#310f1dd9;border:1px solid #c8a96a80;padding:12px 20px;border-radius:2px;line-height:1.4}.story-player #story-play{overflow:visible}@media(max-width:600px){.story-play-label{top:calc(100% + 12px);padding:8px 12px;font-size:15px}}
+
+/* Blend the Rose Cottage signature into the surrounding footer. */
+footer .footer-top{background:linear-gradient(110deg,rgba(74,10,25,.32),rgba(35,5,13,.12));border-top:1px solid rgba(200,169,106,.2);border-bottom:1px solid rgba(200,169,106,.1);box-shadow:none}footer .footer-top .brand::before{background:radial-gradient(ellipse at center,rgba(83,14,30,.12),transparent 75%)}footer .footer-top p,footer .footer-top strong{color:#f7f6f1}
+
+/* One continuous burgundy-to-blue surface across the complete footer. */
+footer{background:linear-gradient(90deg,#3c1020 0%,#292034 48%,#13243b 100%);color:#f7f6f1}footer .fox-footer-banner,footer .footer-top,footer .footer-bottom{background:transparent;box-shadow:none}footer .footer-top .brand::before{background:none}footer .fox-footer-banner,footer .footer-top,footer .footer-bottom{border-color:rgba(200,169,106,.2)}footer .note{color:#dedfe6}
+
+/* Two-image property galleries, with the supplied plans preserved in full. */
+.property-gallery{position:relative}.gallery-arrow{position:absolute;top:calc(50% - 22px);z-index:2;width:44px;height:44px;display:grid;place-items:center;padding:0;border:1px solid #c8a96a;border-radius:50%;background:rgba(49,15,29,.9);color:#f5e4bd;font-size:34px;line-height:1;cursor:pointer}.gallery-prev{left:12px}.gallery-next{right:12px}.gallery-arrow:hover{background:#4a162b}.gallery-arrow:focus-visible{outline:3px solid #c8a96a;outline-offset:3px}.property-gallery .drawing-open img{object-fit:contain;aspect-ratio:1.414;background:#fff}.drawing-switch{display:flex;gap:8px}.drawing-switch button{min-height:44px}.lightbox-wrap{position:relative}.lightbox-wrap>.gallery-arrow{top:calc(50% - 22px)}#viewer .lightbox-stage{flex:1;height:100%;min-height:0}#viewer.property-viewer .gallery-prev{left:16px}#viewer.property-viewer .gallery-next{right:16px}@media(max-width:600px){.gallery-prev{left:4px}.gallery-next{right:4px}.gallery-arrow{width:44px;height:44px;font-size:30px}#viewer.property-viewer .gallery-prev{left:6px}#viewer.property-viewer .gallery-next{right:6px}}
+
+/* Shared project credits in the hero and footer. */
+.hero-bottom .project-credits{max-width:440px;line-height:1.65}
+.project-credits>span{display:block}
+.project-credits strong{font-weight:600}
+@media(max-width:600px){.hero-bottom .project-credits{max-width:calc(100% - 78px);min-width:0;font-size:11px}}
+
+/* Continuous footer between FOX and project credits. */
+footer .fox-footer-banner{border-bottom:0}footer .footer-top{border-top:0}
+/* Numbered visual selection mirrors the property window. */
+#visuals-bar[hidden]{display:none}
+#visuals-bar{display:flex;align-items:center;gap:20px;padding:16px 24px;background:#21050c;color:#f7f6f1;flex-shrink:0}
+.visuals-heading{display:flex;align-items:center;gap:18px;flex:1;min-width:0}
+.visuals-heading strong{font-size:24px;white-space:nowrap}.visuals-heading span{color:#c8a96a;font-size:14px}
+#visuals-nav{display:flex;gap:8px;flex-wrap:wrap}
+#visuals-nav button,#visuals-close{min-width:44px;min-height:44px;border:1px solid #c8a96a80;background:transparent;color:#fff;cursor:pointer}
+#visuals-nav button{border-radius:50%;padding:8px}#visuals-nav button[aria-pressed=true]{background:#c8a96a;color:#21050c}
+#visuals-close{padding:8px 18px}#visuals-bar button:focus-visible{outline:2px solid #c8a96a;outline-offset:3px}
+#viewer.visuals-viewer{padding-top:0}#viewer.visuals-viewer>.close{display:none}
+#viewer.visuals-viewer #viewer-content{display:flex;align-items:center;justify-content:center}
+#viewer.visuals-viewer #viewer-content video{width:100%;height:100%;max-height:100%;object-fit:contain}
+@media(max-width:700px){#visuals-bar{padding:12px;gap:12px;flex-wrap:wrap}.visuals-heading{flex-basis:100%;gap:12px}.visuals-heading strong{font-size:20px}.visuals-heading span{font-size:12px}#visuals-nav{gap:6px;flex:1}#visuals-close{padding:8px 12px}}
+
+/* Desktop shows full navigation; compact screens retain the menu button. */
+@media(min-width:851px){header .menu-toggle.icon-control{display:none}}
+
+/* Burgundy navigation fades towards its translucent right edge. */
+header{background:linear-gradient(to left,rgba(33,5,12,.72) 0%,rgba(45,8,18,.88) 50%,rgba(33,5,12,.98) 100%);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+
+/* Uniform media frames, aligned captions and uncropped enlarged content. */
+.film-grid{align-items:stretch}
+.film-grid>button{display:grid;grid-template-rows:auto 1fr;align-content:start;align-items:start;width:100%;min-width:0}
+.film-grid>button>img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:contain;object-position:center;min-height:0;max-height:none}
+.film-grid>button>span{align-self:stretch;box-sizing:border-box;margin:0;min-height:62px}
+.film-grid>button:hover>img{transform:none}
+.story-player{width:100%;aspect-ratio:16/9;overflow:hidden}
+.story-player video{display:block;width:100%;height:100%;object-fit:contain}
+#home-dialog .property-gallery .drawing-open img{display:block;width:100%;height:clamp(240px,46vh,540px);aspect-ratio:auto;object-fit:contain;object-position:center}
+#viewer-content video{display:block;object-fit:contain;object-position:center}
+@media(max-width:850px){#home-dialog .property-gallery .drawing-open img{height:auto;aspect-ratio:16/9}#home-dialog .property-gallery .drawing-open.is-plan img{aspect-ratio:2048/1448}.film-grid>button>span{min-height:58px}}

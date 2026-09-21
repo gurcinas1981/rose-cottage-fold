@@ -28,3 +28,8 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}body{min-width:0}button
 #viewer-caption{flex-shrink:0;margin:8px 12px;font-size:14px;line-height:1.4}
 #plan-dialog{position:fixed;inset:0;width:100vw;height:100dvh;max-width:none;max-height:none;margin:0}
 @media(max-height:500px){#viewer{padding-top:52px}#viewer-caption{margin:4px 8px;font-size:12px}#viewer .lightbox-controls{padding-top:4px}}
+
+/* The masterplan is the single home-selection surface. */
+.plan-layout{display:block!important}.plan-map{width:100%}.plan-map .image-stage{height:auto;aspect-ratio:1672/941;min-height:240px}.existing-cottage-note{margin:0;padding:14px 18px;font-size:14px!important}#plan-dialog .plan-layout{display:block}#plan-dialog .image-stage{height:calc(100dvh - 180px);aspect-ratio:auto}.plot-pin{min-width:32px;min-height:32px}
+
+.story-player{position:relative;background:#210b11;aspect-ratio:16/9}.story-player video{display:block;width:100%;height:100%;object-fit:contain}.story-player #story-play{position:absolute;inset:0;margin:auto;width:80px;height:80px;border:1px solid #c8a96a;border-radius:50%;background:#310f1de0;color:#e7d4a5;font-size:30px;display:grid;place-items:center;cursor:pointer}.story-player #story-play[hidden]{display:none}.story-player #story-play:hover{background:#310f1d;transform:scale(1.05)}.story-player #story-play:focus-visible{outline:3px solid white;outline-offset:5px}.story-film figcaption{padding:16px 0;font-size:18px;color:var(--ink)}@media(max-width:600px){.story-player #story-play{width:60px;height:60px;font-size:23px}.story-film figcaption{padding:12px 5%;font-size:16px}}

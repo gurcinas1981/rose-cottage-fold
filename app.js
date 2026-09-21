@@ -8,37 +8,79 @@ const plots=[
 ];
 let selected=0,view='visual';
 const $=s=>document.querySelector(s);const viewer=$('#viewer'),content=$('#viewer-content'),hero=$('#hero-video'),fox=$('#fox-video');
-function render(){const p=plots[selected];$('#home-label').textContent='PLOT '+String(selected+1).padStart(2,'0');$('#home-title').textContent=p.name;$('#home-copy').textContent=p.copy;$('#beds').textContent=p.beds;$('#form').textContent=p.form;$('#rooms').textContent=p.rooms;$('#bathrooms').textContent=p.bathrooms;$('#gia').textContent=p.gia;$('#drawing').src='assets/'+(view==='visual'?p.image+'.webp':p.drawing+'.png');$('#drawing').srcset=view==='visual'?`assets/${p.image}-640.webp 640w, assets/${p.image}-1024.webp 1024w, assets/${p.image}.webp ${p.image==='threshing-barn'?1694:p.image==='stalls-dairy'?1721:1672}w`:'';$('#drawing').alt='Plot '+(selected+1)+' · '+p.name+' · '+(view==='visual'?'Architectural visualisation':'Floor plans and elevations');$('#drawing-open').classList.toggle('is-plan',view==='drawing');$('#drawing-download').href='assets/'+p.drawing+'.pdf';$('#plot-enquire').href='mailto:contact@foxvisiondesign.co.uk?subject='+encodeURIComponent('Rose Cottage Fold — Plot '+(selected+1)+' '+p.name);document.querySelectorAll('.home-switch button').forEach(b=>{const active=Number(b.dataset.plot)===selected;b.classList.toggle('active',active);b.setAttribute('aria-pressed',active)});document.querySelectorAll('[data-view]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.view===view));const video=$('#home-video');video.pause();$('#drawing-open').hidden=view==='video';video.hidden=view!=='video';$('#drawing-note').hidden=view!=='drawing';if(view==='video'){video.src='assets/film-'+p.film+'.mp4';video.poster='assets/'+p.image+'.webp'}document.dispatchEvent(new Event('plotchange'));}
-document.querySelectorAll('[data-plot]').forEach(b=>b.addEventListener('click',e=>{e.preventDefault();openHome(Number(b.dataset.plot))}));document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>{view=b.dataset.view;render();if(view==='drawing')show('assets/'+plots[selected].drawing+'.png',plots[selected].name+' · Plans and elevations')}));
+function render(){
+ const p=plots[selected],isPlan=view==='drawing';
+ $('#home-label').textContent='PLOT '+String(selected+1).padStart(2,'0');
+ $('#home-title').textContent=p.name;$('#home-copy').textContent=p.copy;
+ for(const [id,value] of [['beds',p.beds],['form',p.form],['rooms',p.rooms],['bathrooms',p.bathrooms],['gia',p.gia]])$('#'+id).textContent=value;
+ const drawing=$('#drawing');drawing.src='assets/'+(isPlan?p.drawing+'-plans.webp':p.image+'.webp');
+ drawing.srcset=isPlan?'':`assets/${p.image}-640.webp 640w, assets/${p.image}-1024.webp 1024w, assets/${p.image}.webp ${p.image==='threshing-barn'?1694:p.image==='stalls-dairy'?1721:1672}w`;
+ drawing.alt='Plot '+(selected+1)+' · '+p.name+' · '+(isPlan?'Floor plans and elevations':'Architectural visualisation');
+ $('#drawing-open').classList.toggle('is-plan',isPlan);$('#drawing-note').hidden=!isPlan;
+ document.querySelectorAll('[data-view]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.view===view)));
+ for(const id of ['property-prev','property-next'])$('#'+id).setAttribute('aria-label',isPlan?'Show CGI':'Show floor plans');
+ document.dispatchEvent(new Event('plotchange'));
+}
+function togglePropertyView(){view=view==='visual'?'drawing':'visual';render()}
+document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>{view=b.dataset.view;render()}));
+for(const id of ['property-prev','property-next'])$('#'+id).addEventListener('click',togglePropertyView);
 let lightboxNavigator=null;
-function show(src,caption,isVideo=false){
+function showPropertyImage(){const p=plots[selected];show('assets/'+(view==='drawing'?p.drawing+'-plans.webp':p.image+'-original.webp'),p.name+' · '+(view==='drawing'?'Floor plans and elevations':'CGI'),false,true)}
+function show(src,caption,isVideo=false,isProperty=false){
+ content.querySelector('video')?.pause();
+ $('#visuals-bar').hidden=true;viewer.classList.remove('visuals-viewer');
  lightboxNavigator?.destroy();lightboxNavigator=null;content.replaceChildren();content.classList.remove('zoomed');
- const drawingName=src.match(/(?:^|\/)(plot-1|plots-2-3|plot-4|plots-5-6)(?:-full)?\.(?:png|pdf)(?:\?.*)?$/)?.[1];
- const fullSrc=src;
- const media=document.createElement(isVideo?'video':'img');media.src=isVideo?src:fullSrc;
- viewer.classList.toggle('drawing-viewer',Boolean(drawingName));
+ const isPlan=/-plans\.webp$/.test(src),media=document.createElement(isVideo?'video':'img');media.src=src;
+ viewer.classList.toggle('drawing-viewer',isPlan);viewer.classList.toggle('property-viewer',isProperty);
  if(isVideo){media.controls=true;media.playsInline=true;media.preload='metadata';content.append(media)}
  else{
-  media.alt=caption;media.draggable=false;const wrap=document.createElement('div');wrap.className='lightbox-wrap';const stage=document.createElement('div');stage.className='image-stage lightbox-stage';stage.tabIndex=0;stage.setAttribute('role','region');stage.setAttribute('aria-label','Image viewer. Plus and minus zoom; arrow keys pan; Home resets.');const layer=document.createElement('div');layer.className='image-layer';layer.append(media);stage.append(layer);const controls=document.createElement('div');controls.className='lightbox-controls';
-  const add=(label,aria,fn)=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.setAttribute('aria-label',aria);b.addEventListener('click',fn);controls.append(b)};
-  add('−','Zoom out',()=>lightboxNavigator?.zoomOut());add('+','Zoom in',()=>lightboxNavigator?.zoomIn());add('Reset','Reset image',()=>lightboxNavigator?.reset());
-  if(drawingName){const pdfButton=document.createElement('button');pdfButton.type='button';pdfButton.textContent='View original PDF';pdfButton.addEventListener('click',()=>{lightboxNavigator?.destroy();lightboxNavigator=null;const frame=document.createElement('iframe');frame.className='inline-pdf';frame.src='assets/'+drawingName+'.pdf#view=FitH';frame.title=caption+' · Original PDF';frame.setAttribute('loading','eager');stage.replaceChildren(frame);stage.classList.add('pdf-stage');controls.querySelectorAll('button').forEach(button=>button.hidden=true);const back=document.createElement('button');back.type='button';back.textContent='Back to zoomable plan';back.addEventListener('click',()=>show('assets/'+drawingName+'.png',caption));controls.append(back);});controls.append(pdfButton)}else{const original=document.createElement('a');original.href=fullSrc;original.textContent='Open original ↗';original.target='_blank';original.rel='noopener';controls.append(original)}wrap.append(stage,controls);content.append(wrap);
-  lightboxNavigator=createImageNavigator(stage,layer,{maxZoom:10,wheelZoom:true});const loaded=()=>lightboxNavigator?.setImage(media.naturalWidth,media.naturalHeight);media.addEventListener('load',loaded,{once:true});media.addEventListener('error',()=>{stage.textContent='The image could not load. Please open the original file below.';stage.setAttribute('role','status')},{once:true});if(media.complete&&media.naturalWidth)loaded();
+  media.alt=caption;media.draggable=false;
+  const wrap=document.createElement('div');wrap.className='lightbox-wrap';
+  const stage=document.createElement('div');stage.className='image-stage lightbox-stage';stage.tabIndex=0;stage.setAttribute('role','region');stage.setAttribute('aria-label','Image viewer. Pinch or scroll to zoom; drag to move. Plus and minus zoom, arrow keys pan, Home resets.');
+  const layer=document.createElement('div');layer.className='image-layer';layer.append(media);stage.append(layer);wrap.append(stage);content.append(wrap);
+  if(isProperty){for(const direction of ['prev','next']){const b=document.createElement('button');b.type='button';b.className='gallery-arrow gallery-'+direction;b.textContent=direction==='prev'?'‹':'›';b.setAttribute('aria-label',view==='drawing'?'Show CGI':'Show floor plans');b.addEventListener('click',()=>{togglePropertyView();showPropertyImage();content.querySelector('.gallery-'+direction)?.focus()});wrap.append(b)}}
+  lightboxNavigator=createImageNavigator(stage,layer,{maxZoom:10,wheelZoom:true});
+  const currentNavigator=lightboxNavigator;const loaded=()=>currentNavigator.setImage(media.naturalWidth,media.naturalHeight);
+  media.addEventListener('load',loaded,{once:true});media.addEventListener('error',()=>{stage.textContent='The image could not load. Please close the viewer and try again.';stage.setAttribute('role','status')},{once:true});if(media.complete&&media.naturalWidth)loaded();
  }
- $('#viewer-caption').textContent=caption+(isVideo?'':' · Pinch to zoom · Drag to move');hero.pause();fox.pause();$('#home-video').pause();if(!viewer.open)viewer.showModal();document.body.classList.add('viewer-open');lightboxNavigator?.resize();if(isVideo)media.play().catch(()=>{});
+ $('#viewer-caption').textContent=caption;hero.pause();fox.pause();storyVideo.pause();
+ if(!viewer.open)viewer.showModal();document.body.classList.add('viewer-open');lightboxNavigator?.resize();if(isVideo)media.play().catch(()=>{});
 }
-document.querySelectorAll('[data-image]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.image,b.dataset.caption)));document.querySelectorAll('[data-film]').forEach(b=>b.addEventListener('click',()=>{const preview=b.querySelector('img');show(preview?.currentSrc||preview?.src||'assets/aerial-reverse-1024.webp',b.dataset.caption)}));$('#drawing-open').addEventListener('click',()=>show($('#drawing').src,$('#drawing').alt));$('#plot-film').addEventListener('click',()=>show('assets/'+plots[selected].image+'-1024.webp',plots[selected].name+' · Architectural visualisation'));$('.close').addEventListener('click',()=>viewer.close());viewer.addEventListener('close',()=>{lightboxNavigator?.destroy();lightboxNavigator=null;content.querySelector('video')?.pause();content.replaceChildren();document.body.classList.remove('viewer-open')});viewer.addEventListener('click',e=>{if(e.target===viewer)viewer.close()});
+document.querySelectorAll('[data-image]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.image,b.dataset.caption)));
+const visualCards=[...document.querySelectorAll('[data-film]')];
+function openVisual(index){
+ const card=visualCards[index];
+ show('assets/film-'+card.dataset.film+'.mp4',card.dataset.caption,true);
+ $('#visuals-bar').hidden=false;viewer.classList.add('visuals-viewer');
+ $('#visuals-current').textContent='Visual '+(index+1);
+ $('#visuals-name').textContent=card.dataset.caption+' · '+(index+1)+' of '+visualCards.length;
+ [...$('#visuals-nav').children].forEach((button,i)=>button.setAttribute('aria-pressed',String(i===index)));
+ if(document.activeElement===$('.close'))$('#visuals-close').focus();
+}
+visualCards.forEach((card,index)=>{
+ const button=document.createElement('button');button.type='button';button.textContent=index+1;
+ button.setAttribute('aria-label','View '+card.dataset.caption);button.setAttribute('aria-pressed','false');
+ button.addEventListener('click',()=>openVisual(index));$('#visuals-nav').append(button);
+ card.addEventListener('click',()=>openVisual(index));
+});
+$('#visuals-close').addEventListener('click',()=>viewer.close());
+// Preserve existing links to the former section name.
+if(location.hash==='#films')document.getElementById('visuals').scrollIntoView();
+$('#drawing-open').addEventListener('click',showPropertyImage);
+$('.close').addEventListener('click',()=>viewer.close());
+viewer.addEventListener('close',()=>{lightboxNavigator?.destroy();lightboxNavigator=null;content.querySelector('video')?.pause();content.replaceChildren();document.body.classList.remove('viewer-open')});
+viewer.addEventListener('click',e=>{if(e.target===viewer)viewer.close()});
 const menu=$('.menu-toggle'),nav=$('#main-nav');menu.addEventListener('click',()=>{const open=menu.getAttribute('aria-expanded')!=='true';menu.setAttribute('aria-expanded',open);nav.classList.toggle('is-open',open)});nav.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{menu.setAttribute('aria-expanded','false');nav.classList.remove('is-open')}));document.addEventListener('keydown',e=>{if(e.key==='Escape'){menu.setAttribute('aria-expanded','false');nav.classList.remove('is-open')}});
 function sync(video,button){const paused=video.paused;button.textContent=paused?'▶':'Ⅱ';button.setAttribute('aria-label',paused?'Play film':'Pause film');button.setAttribute('title',paused?'Play':'Pause')}
 for(const [video,button] of [[hero,$('#pause')],[fox,$('#fox-play')]]){button.addEventListener('click',()=>{if(video.paused)video.play().catch(()=>{});else video.pause()});video.addEventListener('play',()=>sync(video,button));video.addEventListener('pause',()=>sync(video,button));video.addEventListener('error',()=>{button.hidden=true})}
 $('#fox-full').addEventListener('click',()=>show('assets/fox-land-story.mp4','FOX · Every piece of land has a story',true));
 if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&!navigator.connection?.saveData)hero.play().catch(()=>{});
-const observer=new IntersectionObserver(entries=>entries.forEach(e=>{if(!e.isIntersecting)e.target.pause()}),{threshold:.1});observer.observe(hero);observer.observe(fox);document.addEventListener('visibilitychange',()=>{if(document.hidden){hero.pause();fox.pause();content.querySelector('video')?.pause();$('#home-video').pause()}});
+const observer=new IntersectionObserver(entries=>entries.forEach(e=>{if(!e.isIntersecting)e.target.pause();else if(e.target===hero&&!document.querySelector('dialog[open]')&&!matchMedia('(prefers-reduced-motion: reduce)').matches)hero.play().catch(()=>{})}),{threshold:.1});observer.observe(hero);observer.observe(fox);document.addEventListener('visibilitychange',()=>{if(document.hidden){hero.pause();fox.pause();content.querySelector('video')?.pause()}});
 
 const homeDialog=$('#home-dialog');
-function openHome(index){selected=index;view='visual';render();hero.pause();fox.pause();if(!homeDialog.open)homeDialog.showModal();document.body.classList.add('home-open');homeDialog.scrollTop=0;}
+function openHome(index){storyVideo.pause();selected=index;view='visual';render();hero.pause();fox.pause();if(!homeDialog.open)homeDialog.showModal();document.body.classList.add('home-open');homeDialog.scrollTop=0;}
 $('#home-close').addEventListener('click',()=>homeDialog.close());
-homeDialog.addEventListener('close',()=>{$('#home-video').pause();document.body.classList.remove('home-open')});
+homeDialog.addEventListener('close',()=>{document.body.classList.remove('home-open')});
 homeDialog.addEventListener('click',e=>{if(e.target===homeDialog)homeDialog.close()});
 document.querySelectorAll('.home-switch button').forEach((b,i)=>{const p=plots[i];b.removeAttribute('aria-pressed');b.classList.remove('active');b.setAttribute('aria-haspopup','dialog');b.setAttribute('aria-controls','home-dialog');b.innerHTML=`<img src="assets/${p.image}-640.webp" alt="${p.name} architectural visualisation" loading="lazy"><span class="home-card-copy"><small>PLOT ${String(i+1).padStart(2,'0')} · ${p.beds} BEDROOMS</small><strong>${p.name}</strong><span>Explore home ↗</span></span>`;});
 
@@ -50,9 +92,21 @@ function enquiryMessage(){const data=new FormData(enquiryForm);return{subject:'R
 enquiryForm.addEventListener('submit',event=>{event.preventDefault();if(!enquiryForm.reportValidity())return;const message=enquiryMessage();const gmail='https://mail.google.com/mail/?view=cm&fs=1&to='+encodeURIComponent('contact@foxvisiondesign.co.uk')+'&su='+encodeURIComponent(message.subject)+'&body='+encodeURIComponent(message.body);const opened=window.open(gmail,'_blank');if(opened)opened.opener=null;$('#enquiry-status').textContent=opened?'Your completed message has opened in Gmail. Review it and press Send.':'Your browser blocked the new tab. Please select “Use another email app” below.'});
 $('#enquiry-mailto').addEventListener('click',event=>{if(!enquiryForm.reportValidity()){event.preventDefault();return}const message=enquiryMessage();event.currentTarget.href='mailto:contact@foxvisiondesign.co.uk?subject='+encodeURIComponent(message.subject)+'&body='+encodeURIComponent(message.body)});
 
-// Every architectural drawing entry point uses the same full-screen viewer.
-for(const id of ['drawing-download']){
- const link=document.getElementById(id);link.setAttribute('aria-haspopup','dialog');
- link.addEventListener('click',event=>{event.preventDefault();show(link.href,plots[selected].name+' · Plans and elevations')});
+function resumeHero(){if(!document.hidden&&!document.querySelector('dialog[open]')&&!matchMedia('(prefers-reduced-motion: reduce)').matches)hero.play().catch(()=>{});}
+for(const modal of [viewer,homeDialog])modal.addEventListener('close',resumeHero);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)resumeHero()});
+
+const storyVideo=document.getElementById('story-video'),storyPlay=document.getElementById('story-play');
+storyPlay.addEventListener('click',()=>{hero.pause();fox.pause();storyVideo.controls=true;storyVideo.play().catch(()=>{storyPlay.hidden=false})});
+storyVideo.addEventListener('play',()=>{storyPlay.hidden=true});
+storyVideo.addEventListener('ended',()=>{storyPlay.hidden=false;storyVideo.controls=false});
+document.addEventListener('visibilitychange',()=>{if(document.hidden)storyVideo.pause()});
+
+function updateHomeNavigation(){
+ document.getElementById('home-current-plot').textContent='Plot '+(selected+1);
+ document.getElementById('home-current-name').textContent=plots[selected].name+' · Plot '+(selected+1)+' of '+plots.length;
+ document.querySelectorAll('[data-home-jump]').forEach(button=>{const i=Number(button.dataset.homeJump);button.setAttribute('aria-pressed',String(i===selected));button.setAttribute('aria-label','View Plot '+(i+1)+': '+plots[i].name)});
 }
-document.getElementById('plan-original').addEventListener('click',event=>{event.preventDefault();show(event.currentTarget.href,document.getElementById('plan-mode-label').textContent)});
+document.querySelectorAll('[data-home-jump]').forEach(button=>button.addEventListener('click',()=>openHome(Number(button.dataset.homeJump))));
+document.addEventListener('plotchange',updateHomeNavigation);
+updateHomeNavigation();

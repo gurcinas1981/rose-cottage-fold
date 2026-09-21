@@ -23,20 +23,14 @@ function createImageNavigator(stage,layer,{onUpdate=()=>{},maxZoom=5,wheelZoom=f
 }
 
 (()=>{
- const configs={plan:{src:'site-plan',size:[2048,1185],label:'2D architectural site plan',pins:[[38.5,55.8],[57.8,57.5],[70,59],[85,48.5],[63.9,33.3],[51.6,26.4]]},aerial:{src:'aerial',size:[1672,941],label:'3D aerial visualisation · Arrival view',pins:[[75.7,53],[45.5,27.5],[34.8,17.7],[22.8,10.8],[14.4,31],[24.1,48.8]]},reverse:{src:'aerial-reverse',size:[1672,941],label:'3D aerial visualisation · Courtyard view',pins:[[14.6,17.5],[29.7,36],[46.5,54],[79,66],[54,20],[42.5,12.5]]}};
- const host=document.querySelector('#interactive-plan'),stage=document.querySelector('#plan-stage'),layer=document.querySelector('#plan-layer'),img=document.querySelector('#plan-image'),pins=document.querySelector('#plan-pins'),dialog=document.querySelector('#plan-dialog');let mode='plan',angle='aerial';
- const nav=createImageNavigator(stage,layer,{onUpdate:z=>{document.querySelector('#plan-zoom').textContent=Math.round(z*100)+'%';document.querySelector('#plan-minus').disabled=z<=1.001;document.querySelector('#plan-plus').disabled=z>=4.999}});
- const home=host.parentNode,marker=document.createComment('interactive plan position');home.insertBefore(marker,host);
+ const configs={plan:{src:'site-plan',size:[2048,1185],label:'2D architectural site plan',pins:[[38.5,55.8],[57.8,57.5],[70,59],[85,48.5],[63.9,33.3],[51.6,26.4]]},aerial:{src:'aerial',size:[1672,941],label:'3D aerial visualisation · Arrival view',pins:[[77.8,46.2],[45.7,24.8],[35.3,15.1],[19.8,7.7],[15.2,28.4],[23.4,44.3]]},reverse:{src:'aerial-reverse',size:[1672,941],label:'3D aerial visualisation · Courtyard view',pins:[[14.6,17.5],[29.7,36],[46.5,54],[79,66],[54,20],[42.5,12.5]]}};
+ const host=document.querySelector('#interactive-plan'),stage=document.querySelector('#plan-stage'),layer=document.querySelector('#plan-layer'),img=document.querySelector('#plan-image'),pins=document.querySelector('#plan-pins');let mode='aerial',angle='aerial';
+ const nav=createImageNavigator(stage,layer);
  plots.forEach((p,i)=>{const b=document.createElement('button');b.className='plot-pin';b.type='button';b.textContent=String(i+1).padStart(2,'0');b.setAttribute('aria-label',`Open Plot ${i+1}: ${p.name}, ${p.beds} bedrooms`);b.title='Open '+p.name;b.dataset.home=p.name;b.addEventListener('click',()=>{selectPlot(i);openHome(i)});pins.append(b)});
  function selectPlot(i){selected=i;updateCard()}
- function updateCard(){document.querySelector('#plan-plot-select').value=selected;pins.querySelectorAll('button').forEach((b,i)=>b.setAttribute('aria-pressed',i===selected));}
- function switchView(next){mode=next;const c=configs[mode==='plan'?'plan':angle];const src=mode==='plan'?'site-plan-deploy.webp':c.src+'-1024.webp';img.src='assets/'+src;img.alt=c.label;nav.setImage(...c.size);document.querySelector('#plan-mode-label').textContent=c.label;document.querySelector('#plan-angle').hidden=mode==='plan';document.querySelector('#plan-original').href='assets/'+src;pins.querySelectorAll('button').forEach((b,i)=>{b.style.left=c.pins[i][0]+'%';b.style.top=c.pins[i][1]+'%'});document.querySelectorAll('[data-plan-mode]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.planMode===mode));}
+ function updateCard(){pins.querySelectorAll('button').forEach((b,i)=>b.setAttribute('aria-pressed',i===selected));}
+ function switchView(next){mode=next;const c=configs[mode==='plan'?'plan':angle];const src=mode==='plan'?'site-plan-high-resolution.webp':c.src+'.webp';img.src='assets/'+src;img.alt=c.label;nav.setImage(...c.size);document.querySelector('#plan-angle').hidden=mode==='plan';pins.querySelectorAll('button').forEach((b,i)=>{b.style.left=c.pins[i][0]+'%';b.style.top=c.pins[i][1]+'%'});document.querySelectorAll('[data-plan-mode]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.planMode===mode));}
  document.querySelectorAll('[data-plan-mode]').forEach(b=>b.addEventListener('click',()=>switchView(b.dataset.planMode)));
  document.querySelector('#plan-angle').addEventListener('click',()=>{angle=angle==='aerial'?'reverse':'aerial';switchView('aerial')});
- document.querySelector('#plan-plus').addEventListener('click',nav.zoomIn);document.querySelector('#plan-minus').addEventListener('click',nav.zoomOut);document.querySelector('#plan-reset').addEventListener('click',nav.reset);
- document.querySelector('#plan-plot-select').addEventListener('change',e=>{const i=Number(e.target.value);selectPlot(i);openHome(i)});
- document.querySelector('#plan-open-home').addEventListener('click',()=>openHome(selected));
- const expand=document.querySelector('#plan-expand');expand.addEventListener('click',()=>{if(dialog.open){dialog.close();return}dialog.append(host);dialog.showModal();document.body.classList.add('plan-expanded');expand.textContent='Close full screen ×';expand.setAttribute('aria-expanded','true');nav.resize();expand.focus()});
- dialog.addEventListener('close',()=>{marker.after(host);document.body.classList.remove('plan-expanded');expand.textContent='Full screen ⤢';expand.setAttribute('aria-expanded','false');nav.resize();expand.focus()});
- document.addEventListener('plotchange',updateCard);switchView('plan');updateCard();
+ document.addEventListener('plotchange',updateCard);switchView('aerial');updateCard();
 })();
