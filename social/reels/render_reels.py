@@ -7,7 +7,7 @@ ASSETS = ROOT / "assets"
 OUT = ROOT / "social" / "reels" / "output"
 OUT.mkdir(parents=True, exist_ok=True)
 
-W,H,DUR = 1080,1920,18
+W,H,DUR = 1080,1920,12
 BURGUNDY = "0x290710"
 GOLD = "0xC8A96A"
 CREAM = "0xF7F6F1"
@@ -97,7 +97,7 @@ def render(item):
     vf = ";".join(filters)
 
     cmd = ["ffmpeg","-y",*input_args,"-filter_complex",vf,"-map","[final]","-t",str(DUR),
-           "-r","30","-an","-c:v","libx264","-preset","medium","-crf","20","-pix_fmt","yuv420p",
+           "-r","30","-an","-c:v","libx264","-preset","veryfast","-crf","21","-pix_fmt","yuv420p",
            "-movflags","+faststart",str(out)]
     print("Rendering", out.name)
     subprocess.run(cmd, check=True)
